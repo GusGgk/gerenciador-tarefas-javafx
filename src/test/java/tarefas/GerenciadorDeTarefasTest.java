@@ -49,6 +49,16 @@ class GerenciadorDeTarefasTest {
         erro("O título é obrigatório", () -> g.editar(t.id(), " ", "Outra", Prioridade.ALTA, hoje, hoje));
         assertEquals(t, g.obter(t.id()));
     }
+    @Test void prazoInvalidoNaEdicaoNaoMudaNenhumCampo() {
+        Tarefa t = criar("Original");
+        erro("O prazo não pode ser no passado", () -> g.editar(t.id(), "Novo", "", Prioridade.ALTA, hoje.minusDays(1), hoje));
+        assertEquals(t, g.obter(t.id()));
+    }
+    @Test void permiteEditarTituloMantendoPrazoQueVenceuDepoisDaCriacao() {
+        Tarefa t = g.criar("Original", "", null, hoje, hoje);
+        g.editar(t.id(), "Novo", "", null, hoje, hoje.plusDays(1));
+        assertEquals("Novo", g.obter(t.id()).titulo());
+    }
     @Test void concluiEReabre() {
         long id = criar("Lavar a louça").id(); g.concluir(id);
         assertEquals(Status.CONCLUIDA, g.obter(id).status());
@@ -75,7 +85,29 @@ class GerenciadorDeTarefasTest {
         erro("A prioridade é obrigatória", () -> g.definirPrioridade(id, null));
         assertEquals(Prioridade.MEDIA, g.obter(id).prioridade());
     }
+    @Test void aceitaPrazoHojeEFuturoEPodeRemover() {
+        long id = criar("Entregar").id(); g.definirPrazo(id, hoje, hoje);
+        assertFalse(g.obter(id).atrasada(hoje));
+        g.definirPrazo(id, hoje.plusDays(7), hoje); assertEquals(hoje.plusDays(7), g.obter(id).prazo());
+        g.definirPrazo(id, null, hoje); assertNull(g.obter(id).prazo());
+    }
+    @Test void rejeitaCriacaoComPrazoPassado() {
+        erro("O prazo não pode ser no passado", () -> g.criar("Entrega", "", null, hoje.minusDays(1), hoje));
+        assertTrue(g.listar().isEmpty()); assertEquals(1, criar("Válida").id());
+    }
+    @Test void rejeitaPrazoPassadoSemAlterarTarefa() {
+        Tarefa t = criar("Entrega");
+        erro("O prazo não pode ser no passado", () -> g.definirPrazo(t.id(), hoje.minusDays(1), hoje));
+        assertEquals(t, g.obter(t.id()));
+    }
     @Test void rejeitaHojeNulo() {
         erro("A data de hoje é obrigatória", () -> g.criar("Entrega", "", null, null, null));
+    }
+    @Test void atrasoDependeDaDataEStatus() {
+        Tarefa t = g.criar("Entrega", "", null, hoje, hoje);
+        assertFalse(t.atrasada(hoje)); assertTrue(t.atrasada(hoje.plusDays(1)));
+        g.concluir(t.id()); assertFalse(g.obter(t.id()).atrasada(hoje.plusDays(1)));
+        g.reabrir(t.id()); assertTrue(g.obter(t.id()).atrasada(hoje.plusDays(1)));
+        assertFalse(criar("Sem prazo").atrasada(hoje.plusYears(1)));
     }
 }

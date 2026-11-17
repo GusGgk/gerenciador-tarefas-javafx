@@ -50,7 +50,10 @@ public class GerenciadorDeTarefas {
         if (prioridade == null) throw new IllegalArgumentException("A prioridade é obrigatória");
         atualizar(t, t.status(), prioridade, t.prazo());
     }
-    public void definirPrazo(long id, LocalDate prazo, LocalDate hoje) { throw new UnsupportedOperationException("Funcionalidade ainda não integrada"); }
+    public void definirPrazo(long id, LocalDate prazo, LocalDate hoje) {
+        Tarefa t = obter(id); validarPrazo(prazo, hoje);
+        atualizar(t, t.status(), t.prioridade(), prazo);
+    }
     public List<Tarefa> listar() { return List.copyOf(tarefas.values()); }
     public List<Tarefa> consultar(Prioridade prioridade, Status status, String busca) { throw new UnsupportedOperationException("Funcionalidade ainda não integrada"); }
     private void atualizar(Tarefa t, Status status, Prioridade prioridade, LocalDate prazo) {
@@ -64,5 +67,8 @@ public class GerenciadorDeTarefas {
     private void validarHoje(LocalDate hoje) {
         if (hoje == null) throw new IllegalArgumentException("A data de hoje é obrigatória");
     }
-    private void validarPrazo(LocalDate prazo, LocalDate hoje) { validarHoje(hoje); }
+    private void validarPrazo(LocalDate prazo, LocalDate hoje) {
+        validarHoje(hoje);
+        if (prazo != null && prazo.isBefore(hoje)) throw new IllegalArgumentException("O prazo não pode ser no passado");
+    }
 }
