@@ -17,7 +17,17 @@ public class GerenciadorDeTarefas {
         return tarefa;
     }
 
-    public Tarefa editar(long id, String titulo, String descricao, Prioridade prioridade, LocalDate prazo, LocalDate hoje) { throw new UnsupportedOperationException("Funcionalidade ainda não integrada"); }
+    public Tarefa editar(long id, String titulo, String descricao, Prioridade prioridade, LocalDate prazo, LocalDate hoje) {
+        Tarefa anterior = obter(id);
+        String valido = validarTitulo(titulo);
+        // Um prazo que venceu desde a criação não impede editar o título.
+        validarHoje(hoje);
+        if (!Objects.equals(prazo, anterior.prazo())) validarPrazo(prazo, hoje);
+        Tarefa nova = new Tarefa(id, valido, normalizarDescricao(descricao), anterior.status(),
+                prioridade == null ? Prioridade.MEDIA : prioridade, prazo);
+        tarefas.put(id, nova);
+        return nova;
+    }
 
     public Tarefa obter(long id) {
         Tarefa tarefa = tarefas.get(id);
