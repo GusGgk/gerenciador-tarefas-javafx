@@ -45,7 +45,11 @@ public class GerenciadorDeTarefas {
         atualizar(t, Status.PENDENTE, t.prioridade(), t.prazo());
     }
     public void excluir(long id) { obter(id); tarefas.remove(id); }
-    public void definirPrioridade(long id, Prioridade prioridade) { throw new UnsupportedOperationException("Funcionalidade ainda não integrada"); }
+    public void definirPrioridade(long id, Prioridade prioridade) {
+        Tarefa t = obter(id);
+        if (prioridade == null) throw new IllegalArgumentException("A prioridade é obrigatória");
+        atualizar(t, t.status(), prioridade, t.prazo());
+    }
     public void definirPrazo(long id, LocalDate prazo, LocalDate hoje) { throw new UnsupportedOperationException("Funcionalidade ainda não integrada"); }
     public List<Tarefa> listar() { return List.copyOf(tarefas.values()); }
     public List<Tarefa> consultar(Prioridade prioridade, Status status, String busca) { throw new UnsupportedOperationException("Funcionalidade ainda não integrada"); }

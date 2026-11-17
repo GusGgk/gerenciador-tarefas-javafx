@@ -66,6 +66,15 @@ class GerenciadorDeTarefasTest {
         long id = criar("Boleto").id(); g.excluir(id); assertTrue(g.listar().isEmpty());
         erro("Tarefa não encontrada", () -> g.obter(id));
     }
+    @Test void alteraPrioridade() {
+        long id = criar("Ler").id(); g.definirPrioridade(id, Prioridade.ALTA);
+        assertEquals(Prioridade.ALTA, g.obter(id).prioridade());
+    }
+    @Test void rejeitaPrioridadeNulaNaAlteracao() {
+        long id = criar("Ler").id();
+        erro("A prioridade é obrigatória", () -> g.definirPrioridade(id, null));
+        assertEquals(Prioridade.MEDIA, g.obter(id).prioridade());
+    }
     @Test void rejeitaHojeNulo() {
         erro("A data de hoje é obrigatória", () -> g.criar("Entrega", "", null, null, null));
     }
