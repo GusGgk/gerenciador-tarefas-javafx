@@ -34,14 +34,24 @@ public class GerenciadorDeTarefas {
         if (tarefa == null) throw new IllegalArgumentException("Tarefa não encontrada");
         return tarefa;
     }
-    public void concluir(long id) { throw new UnsupportedOperationException("Funcionalidade ainda não integrada"); }
-    public void reabrir(long id) { throw new UnsupportedOperationException("Funcionalidade ainda não integrada"); }
+    public void concluir(long id) {
+        Tarefa t = obter(id);
+        if (t.status() == Status.CONCLUIDA) throw new IllegalArgumentException("A tarefa já está concluída");
+        atualizar(t, Status.CONCLUIDA, t.prioridade(), t.prazo());
+    }
+    public void reabrir(long id) {
+        Tarefa t = obter(id);
+        if (t.status() == Status.PENDENTE) throw new IllegalArgumentException("A tarefa já está pendente");
+        atualizar(t, Status.PENDENTE, t.prioridade(), t.prazo());
+    }
     public void excluir(long id) { throw new UnsupportedOperationException("Funcionalidade ainda não integrada"); }
     public void definirPrioridade(long id, Prioridade prioridade) { throw new UnsupportedOperationException("Funcionalidade ainda não integrada"); }
     public void definirPrazo(long id, LocalDate prazo, LocalDate hoje) { throw new UnsupportedOperationException("Funcionalidade ainda não integrada"); }
     public List<Tarefa> listar() { return List.copyOf(tarefas.values()); }
     public List<Tarefa> consultar(Prioridade prioridade, Status status, String busca) { throw new UnsupportedOperationException("Funcionalidade ainda não integrada"); }
-    private void atualizar(Tarefa t, Status status, Prioridade prioridade, LocalDate prazo) { throw new UnsupportedOperationException("Funcionalidade ainda não integrada"); }
+    private void atualizar(Tarefa t, Status status, Prioridade prioridade, LocalDate prazo) {
+        tarefas.put(t.id(), new Tarefa(t.id(), t.titulo(), t.descricao(), status, prioridade, prazo));
+    }
     private String validarTitulo(String titulo) {
         if (titulo == null || titulo.isBlank()) throw new IllegalArgumentException("O título é obrigatório");
         return titulo.strip();
