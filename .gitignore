@@ -1,0 +1,17 @@
+target/
+.cache/
+.venv/
+__pycache__/
+*.pyc
+.idea/
+*.iml
+.env
+AGENTS.md
+CLAUDE.md
+
+# Distribuição e resultados locais
+dist/
+lib/*.jar
+evidencias/robot/
+evidencias/tela.png
+SHA256SUMS.txt
