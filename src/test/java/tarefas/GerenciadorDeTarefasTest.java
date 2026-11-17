@@ -33,6 +33,10 @@ class GerenciadorDeTarefasTest {
         Tarefa t = g.criar("  Estudar  ", null, null, null, hoje);
         assertEquals("Estudar", t.titulo()); assertEquals("", t.descricao());
     }
+    @Test void idsNaoSeRepetemDepoisDeExcluir() {
+        long id = criar("Primeira").id(); g.excluir(id);
+        assertTrue(criar("Segunda").id() > id);
+    }
     @Test void editaTodosOsCamposSemMudarIdOuStatus() {
         Tarefa t = criar("Antigo"); g.concluir(t.id());
         Tarefa editada = g.editar(t.id(), "Novo", "Descrição", Prioridade.ALTA, hoje.plusDays(2), hoje);
@@ -57,6 +61,10 @@ class GerenciadorDeTarefasTest {
     @Test void naoReabrePendente() {
         long id = criar("Louça").id();
         erro("A tarefa já está pendente", () -> g.reabrir(id));
+    }
+    @Test void excluiExistente() {
+        long id = criar("Boleto").id(); g.excluir(id); assertTrue(g.listar().isEmpty());
+        erro("Tarefa não encontrada", () -> g.obter(id));
     }
     @Test void rejeitaHojeNulo() {
         erro("A data de hoje é obrigatória", () -> g.criar("Entrega", "", null, null, null));

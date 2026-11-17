@@ -44,7 +44,7 @@ public class GerenciadorDeTarefas {
         if (t.status() == Status.PENDENTE) throw new IllegalArgumentException("A tarefa já está pendente");
         atualizar(t, Status.PENDENTE, t.prioridade(), t.prazo());
     }
-    public void excluir(long id) { throw new UnsupportedOperationException("Funcionalidade ainda não integrada"); }
+    public void excluir(long id) { obter(id); tarefas.remove(id); }
     public void definirPrioridade(long id, Prioridade prioridade) { throw new UnsupportedOperationException("Funcionalidade ainda não integrada"); }
     public void definirPrazo(long id, LocalDate prazo, LocalDate hoje) { throw new UnsupportedOperationException("Funcionalidade ainda não integrada"); }
     public List<Tarefa> listar() { return List.copyOf(tarefas.values()); }
